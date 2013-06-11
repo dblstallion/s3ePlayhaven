@@ -1,0 +1,15 @@
+#!/usr/bin/env mkb
+
+subprojects
+{
+    iwnui
+    ../s3ePlayhaven.mkf
+}
+
+file s3ePlayhavenExample.cpp
+file ExampleUI.cpp
+
+assets
+{
+    res
+}

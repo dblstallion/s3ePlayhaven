@@ -1,0 +1,38 @@
+\hypertarget{structs3e_p_h_reward}{\section{s3e\-P\-H\-Reward Struct Reference}
+\label{structs3e_p_h_reward}\index{s3e\-P\-H\-Reward@{s3e\-P\-H\-Reward}}
+}
+
+
+{\ttfamily \#include $<$s3e\-Playhaven.\-h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structs3e_p_h_reward_adc1cae5cc75868d164a73e04cfcc9a24}{const char $\ast$ {\bfseries name}}\label{structs3e_p_h_reward_adc1cae5cc75868d164a73e04cfcc9a24}
+
+\item 
+\hypertarget{structs3e_p_h_reward_a594f2056b9d55d91cd886a33e3227dcf}{int {\bfseries quantity}}\label{structs3e_p_h_reward_a594f2056b9d55d91cd886a33e3227dcf}
+
+\item 
+\hypertarget{structs3e_p_h_reward_a3198d54b0c1eb9d868a08aa35d82988e}{const char $\ast$ {\bfseries receipt}}\label{structs3e_p_h_reward_a3198d54b0c1eb9d868a08aa35d82988e}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Structure passed to the S3\-E\-P\-H\-\_\-\-C\-O\-N\-T\-E\-N\-T\-\_\-\-U\-N\-L\-O\-C\-K\-\_\-\-R\-E\-W\-A\-R\-D callback note The contents of this structure will be deallocated once it drops out of scope.
+
+
+\begin{DoxyParams}{Parameters}
+{\em name} & -\/ The name of your reward as configured on the dashboard. \\
+\hline
+{\em quantity} & -\/ An integer representing the quantity associated with the reward. \\
+\hline
+{\em receipt} & -\/ A unique identifier that is used to detect duplicate reward unlocks. Your app should ensure that each receipt is only unlocked once. \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+D\-:/\-Andy\-Gray/trunk/\-Marmalade/\-Extensions/s3e\-Play\-Haven/h/s3e\-Playhaven.\-h\end{DoxyCompactItemize}

@@ -1,0 +1,148 @@
+# mkf file for building extension s3ePlayhaven.
+# NOTE: This file was originally written by the extension builder, but will not
+# be overwritten (unless --force is specified) and is intended to be modified.
+display_name "Extensions/s3ePlayhaven"
+
+includepath source/h
+includepath h
+
+defines
+{
+    #Define the verbose channel to be off by default (but controllable by icf)
+    IW_TRACE_CHANNEL_PLAYHAVEN_VERBOSE=2
+
+    #This macro indicates that this extension is being built
+    S3E_EXT_PLAYHAVEN
+}
+
+#This command re-generates the relevant source files from the s4e when
+#the mkb is run
+extension
+{
+    ("$MARMALADE_ROOT/s3e/edk/builder")
+    "edk_build  s3ePlayhaven.s4e"
+}
+
+#include the extension builder subproject
+subproject "$MARMALADE_ROOT/s3e/edk"
+
+if {{defined I3D_OS_IPHONE}}
+{
+    define PH_NAMESPACE_LIBS  # PH_NAMESPACE_LIBS puts OpenUDID and SBJSON in their own namespace
+    includepath source/iphone/src
+    includepath source/iphone/JSON
+    includepath source/iphone/OpenUDID
+    includepath source/iphone/Cache
+    files
+    {
+        ["source"]
+        (use_first_found, source/iphone)
+        PH_IOS_defines.txt
+        s3ePlayhaven_platform.mm
+        #Add any iphone-specific files here
+        ["OpenUDID"]
+        (source/iphone/OpenUDID)
+        OpenUDID.m
+        ["SBJSON"]
+        (source/iphone/JSON)
+        SBJsonBase.m
+        SBJsonParser.m
+        SBJsonWriter.m
+        ["SDCachedURLResponse"]
+        (source/iphone/Cache)
+        SDCachedURLResponse.m
+        SDURLCache.m
+        ["PH Source"]
+        (source/iphone/src)
+        PHURLLoader.m
+        PHAPIRequest.m
+        PHStringUtil.m
+        PHConstants.m
+        PHNetworkUtil.m
+        "NSObject+QueryComponents.m"
+        "UIDevice+HardwareString.m"
+        PHStoreProductViewControllerDelegate.m
+        PHTimeInGame.m
+        PHPublisherIAPTrackingRequest.m
+        PHPublisherMetadataRequest.m
+        PHNotificationView.m
+        PHNotificationRenderer.m
+        PHNotificationBadgeRenderer.m
+        PHPublisherSubContentRequest.m
+        PHContent.m
+        PHContentView.m
+        PHPublisherContentRequest.m
+        PHReward.m
+        PHPurchase.m
+        PHPublisherOpenRequest.m    
+		PHConnectionManager.m
+		PHResourceCacher.m
+    }
+}
+
+if {{defined I3D_OS_WINDOWS}}
+{
+    files
+    {
+        ["source"]
+        (use_first_found, source/windows, source/generic)
+        s3ePlayhaven_platform.cpp
+        #Add any windows-specific files here
+    }
+}
+
+if {{defined S3E_ANDROID}}
+{
+    files
+    {
+        ["source"]
+        (use_first_found, source/android, source/generic)
+        s3ePlayhaven_platform.cpp
+        #Add any android-specific files here
+    }
+}
+
+if {{defined I3D_OS_OSX}}
+{
+    files
+    {
+        ["source"]
+        (use_first_found, source/osx, source/generic)
+        s3ePlayhaven_platform.mm
+        #Add any osx-specific files here
+    }
+}
+
+if {{defined I3D_OS_LINUX and not defined S3E_ANDROID}}
+{
+    files
+    {
+        ["source"]
+        (use_first_found, source/linux, source/generic)
+        s3ePlayhaven_platform.cpp
+        #Add any linux-specific files here
+    }
+}
+
+files
+{
+    (source/generic)
+    # Add any platform-independent files here
+    # Note that if the file exists in the platform-specific directory
+    # it will be taken from there instead of 'generic'
+    s3ePlayhaven_register.cpp
+    s3ePlayhaven.cpp
+
+    ["h"]
+    (source/h)
+    s3ePlayhaven_internal.h
+    s3ePlayhaven_autodefs.h
+
+    ["docs"]
+    (interface)
+    s3ePlayhaven.defines.txt
+
+    []
+    (.)
+    s3ePlayhaven.s4e
+}

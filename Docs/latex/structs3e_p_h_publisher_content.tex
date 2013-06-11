@@ -1,0 +1,48 @@
+\hypertarget{structs3e_p_h_publisher_content}{\section{s3e\-P\-H\-Publisher\-Content Struct Reference}
+\label{structs3e_p_h_publisher_content}\index{s3e\-P\-H\-Publisher\-Content@{s3e\-P\-H\-Publisher\-Content}}
+}
+
+
+{\ttfamily \#include $<$s3e\-Playhaven.\-h$>$}
+
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{structs3e_p_h_publisher_content_a5b157d1356278cfa8cc580333bef74a2}{const char $\ast$ {\bfseries placement}}\label{structs3e_p_h_publisher_content_a5b157d1356278cfa8cc580333bef74a2}
+
+\item 
+\hypertarget{structs3e_p_h_publisher_content_affbc30429560f0c2fa8e66f6f2d0cdf0}{const char $\ast$ {\bfseries url}}\label{structs3e_p_h_publisher_content_affbc30429560f0c2fa8e66f6f2d0cdf0}
+
+\item 
+\hypertarget{structs3e_p_h_publisher_content_a0708d46316d1fc997d7c2ad40540b97c}{s3e\-P\-H\-Content\-Transition\-Type {\bfseries transition}}\label{structs3e_p_h_publisher_content_a0708d46316d1fc997d7c2ad40540b97c}
+
+\item 
+\hypertarget{structs3e_p_h_publisher_content_ac79cea580ad0bd4cbb8e17974aeed4ca}{const char $\ast$ {\bfseries close\-Button\-U\-R\-L\-Path}}\label{structs3e_p_h_publisher_content_ac79cea580ad0bd4cbb8e17974aeed4ca}
+
+\item 
+\hypertarget{structs3e_p_h_publisher_content_a34cc7c6413a4b4f27a0f16e138a7e773}{const char $\ast$ {\bfseries dismiss\-Reason}}\label{structs3e_p_h_publisher_content_a34cc7c6413a4b4f27a0f16e138a7e773}
+
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Structure passed back to various content status callbacks note The contents of this structure will be deallocated once it drops out of scope.
+
+
+\begin{DoxyParams}{Parameters}
+{\em placement} & -\/ placement I\-D for this content, see Playhaven dashboard \\
+\hline
+{\em url} & \\
+\hline
+{\em transition} & \\
+\hline
+{\em close\-Button\-U\-R\-L\-Path} & \\
+\hline
+{\em dismiss\-Reason} & -\/ only valid for S3\-E\-P\-H\-\_\-\-C\-O\-N\-T\-E\-N\-T\-\_\-\-D\-I\-S\-M\-I\-S\-S\-I\-N\-G, otherwise N\-U\-L\-L, see Playhaven documentation for dismissal string types eg. P\-H\-Publisher\-Content\-Unit\-Triggered\-Dismiss \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+D\-:/\-Andy\-Gray/trunk/\-Marmalade/\-Extensions/s3e\-Play\-Haven/h/s3e\-Playhaven.\-h\end{DoxyCompactItemize}
