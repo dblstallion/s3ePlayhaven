@@ -26,6 +26,8 @@
 #import "PHNetworkUtil.h"
 #import "PHResourceCacher.h"
 
+static NSString *const kPHTimeZoneKey = @"tz";
+
 @interface PHAPIRequest (Private)
 - (void)finish;
 + (void)setSession:(NSString *)session;
@@ -54,6 +56,7 @@
                             forKey:@"scount"];
     [additionalParameters setValue:[NSNumber numberWithInt:(int)floor([[PHTimeInGame getInstance] getSumSessionDuration])]
                             forKey:@"ssum"];
+    [additionalParameters setObject:[self timeZoneOffsetFromGMTAsString] forKey:kPHTimeZoneKey];
 
     return  additionalParameters;
 }
@@ -102,5 +105,12 @@
     [super dealloc];
 }
 
-#pragma mark - NSOperationQueue observer
+#pragma mark - Private
+
+- (NSString *)timeZoneOffsetFromGMTAsString
+{
+    return [NSString stringWithFormat:@"%d.%d", [[NSTimeZone systemTimeZone] secondsFromGMT] / 3600,
+                ([[NSTimeZone systemTimeZone] secondsFromGMT] % 3600) / 60];
+}
+
 @end

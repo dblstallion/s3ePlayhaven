@@ -22,6 +22,7 @@
 #import "PHNetworkUtil.h"
 #import "PHConstants.h"
 #import "PHAPIRequest.h"
+#import <CommonCrypto/CommonHMAC.h>
 
 #include <sys/socket.h>
 #include <sys/sysctl.h>
@@ -147,32 +148,14 @@
 
 - (NSString *)stringForMACBytes:(CFDataRef)macBytes
 {
+    if (NULL == macBytes)
+    {
+        return nil;
+    }
+
     const uint8_t *ptr = CFDataGetBytePtr(macBytes);
     return [[NSString stringWithFormat:@"%02X%02X%02X%02X%02X%02X",
                             *ptr, *(ptr+1), *(ptr+2), *(ptr+3), *(ptr+4), *(ptr+5)] lowercaseString];
 }
 
-- (NSString *)ODIN1ForMACBytes:(CFDataRef)macBytes
-{
-    unsigned char messageDigest[CC_SHA1_DIGEST_LENGTH];
-
-    CC_SHA1(CFDataGetBytePtr((CFDataRef)macBytes),
-            CFDataGetLength((CFDataRef)macBytes),
-            messageDigest);
-
-    CFMutableStringRef string = CFStringCreateMutable(NULL, 40);
-    for(int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++) {
-        CFStringAppendFormat(string,
-                             NULL,
-                             (CFStringRef)@"%02X",
-                             messageDigest[i]);
-    }
-
-    CFStringLowercase(string, CFLocaleGetSystem());
-
-    NSString *odinstring = [[[NSString alloc] initWithString:(NSString*)string] autorelease];
-    CFRelease(string);
-
-    return odinstring;
-}
 @end

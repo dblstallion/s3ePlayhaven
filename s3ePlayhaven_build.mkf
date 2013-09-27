@@ -39,44 +39,23 @@ if {{defined I3D_OS_IPHONE}}
         (use_first_found, source/iphone)
         PH_IOS_defines.txt
         s3ePlayhaven_platform.mm
+		
         #Add any iphone-specific files here
-        ["OpenUDID"]
-        (source/iphone/OpenUDID)
-        OpenUDID.m
+        ["WaterWorks"]
+        (source/iphone/WaterWorks)
+        "*.m"
+		
         ["SBJSON"]
         (source/iphone/JSON)
-        SBJsonBase.m
-        SBJsonParser.m
-        SBJsonWriter.m
+        "*.m"
+		
         ["SDCachedURLResponse"]
         (source/iphone/Cache)
-        SDCachedURLResponse.m
-        SDURLCache.m
+        "*.m"
+		
         ["PH Source"]
         (source/iphone/src)
-        PHURLLoader.m
-        PHAPIRequest.m
-        PHStringUtil.m
-        PHConstants.m
-        PHNetworkUtil.m
-        "NSObject+QueryComponents.m"
-        "UIDevice+HardwareString.m"
-        PHStoreProductViewControllerDelegate.m
-        PHTimeInGame.m
-        PHPublisherIAPTrackingRequest.m
-        PHPublisherMetadataRequest.m
-        PHNotificationView.m
-        PHNotificationRenderer.m
-        PHNotificationBadgeRenderer.m
-        PHPublisherSubContentRequest.m
-        PHContent.m
-        PHContentView.m
-        PHPublisherContentRequest.m
-        PHReward.m
-        PHPurchase.m
-        PHPublisherOpenRequest.m    
-		PHConnectionManager.m
-		PHResourceCacher.m
+        "*.m"
     }
 }
 

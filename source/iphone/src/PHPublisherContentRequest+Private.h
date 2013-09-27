@@ -13,21 +13,22 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- PlayHavenSDK.h
+ PHPublisherContentRequest+Private.h
  playhaven-sdk-ios
 
- Created by Jesus Fernandez on 4/22/11.
+ Created by Anton Fedorchenko on 9/6/13.
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#import "PHConstants.h"
+@interface PHPublisherContentRequest ()
+/**
+ * Checks if a given dictionary is a valid reward dictionary containing all the expected key-values
+ * and valid signature.
+ **/
+- (BOOL)isValidReward:(NSDictionary *)rewardData;
 
-#import "PHPublisherOpenRequest.h"
-#import "PHPublisherContentRequest.h"
-#import "PHPublisherMetadataRequest.h"
-#import "PHPublisherIAPTrackingRequest.h"
-
-#import "PHNotificationView.h"
-#import "PHReward.h"
-#import "PHPurchase.h"
-
-#import "PHPushProvider.h"
+/**
+ * Checks if a given dictionary is a valid purchase dictionary containing all the expected
+ * key-values and valid signature.
+ **/
+- (BOOL)isValidPurchase:(NSDictionary *)purchaseData;
+@end

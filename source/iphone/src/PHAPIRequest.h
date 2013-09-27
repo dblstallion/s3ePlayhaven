@@ -19,7 +19,6 @@
  Created by Jesus Fernandez on 3/30/11.
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#import <CommonCrypto/CommonHMAC.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
@@ -38,8 +37,9 @@
 /**
  * @internal
  *
- * @brief Base class for API requests, generates valid request signatures based on the
- * device's GID, and checks for a valid X-PH-DIGEST response signature.
+ * @brief Base class that represents requests from SDK to PlayHaven server. It encapsulates basic
+ *  parameters needed to construct a request URL, implements logic for establishing a connection
+ *  with the server and processing server's response.
  **/
 @interface PHAPIRequest : NSObject <PHConnectionManagerDelegate> {
     NSURL           *_URL;
@@ -87,7 +87,7 @@
 
 /**
  * Retrieves the PHID (otherwise known as the session token) from the pasteboard.
- * This value is used for GID/PHID-based device identification
+ * This value is used for device identification.
  *
  * @return
  *   The session token
@@ -99,8 +99,12 @@
  **/
 /*@{*/
 /**
- * Gets and sets the UDID opt-out status. If \c YES and <tt>PH_USE_UNIQUE_IDENTIFIER == 1</tt>,
- * then the device's UDID will be sent with each request. Defaults to \c YES
+ * Gets and sets opt-out status for the usage of a device's MAC address. If \c YES and <tt>PH_USE_MAC_ADDRESS == 1</tt>,
+ * then the device's MAC address will be sent with each request. Defaults to NO. The default value can
+ * be changed by specifying PHDefaultUserIsOptedOut key with boolean value in the information
+ * property list file. If PHDefaultUserIsOptedOut is set to YES this method defaults to YES,
+ * otherwise default value is NO. The ability to change default behavior can be useful for
+ * publishers who create games targeted at an expected underage audience.
  **/
 + (BOOL)optOutStatus;
 + (void)setOptOutStatus:(BOOL)yesOrNo;
@@ -147,6 +151,8 @@
  *   The PHAPIRequest instance
  **/
 + (id)requestForApp:(NSString *)token secret:(NSString *)secret;
+
+- (id)initWithApp:(NSString *)token secret:(NSString *)secret;
 
 /**
  * Returns an existing request with a hash code value of \c hashCode.

@@ -163,8 +163,16 @@
 - (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
 {
     self.targetURL = [request URL];
-    if ([self.targetURL.host hasSuffix:@"itunes.apple.com"]) {
-        PH_LOG(@"detected app store URL: %@", self.targetURL);
+    
+    BOOL theITunesLink = [self.targetURL.host hasSuffix:@"itunes.apple.com"];
+    // Links with custom URL cannot be handled by NSURLConnection which gives us ability to filter
+    // links that should be forwarded to openURL: of UIApplication.
+    BOOL theLinkCanBeHandled = [NSURLConnection canHandleRequest:request];
+
+    if (theITunesLink || !theLinkCanBeHandled)
+    {
+        PH_DEBUG(@"Loader detected special URL: %@", self.targetURL);
+            
         [self finish];
         return nil;
     }

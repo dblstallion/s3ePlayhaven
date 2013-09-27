@@ -10,6 +10,13 @@
 
 #include "s3ePlayhaven.h"
 
+
+// For MIPs (and WP8) platform we do not have asm code for stack switching 
+// implemented. So we make LoaderCallStart call manually to set GlobalLock
+#if defined __mips || defined S3E_ANDROID_X86 || (defined(WINAPI_FAMILY) && (WINAPI_FAMILY == WINAPI_FAMILY_PHONE_APP))
+#define LOADER_CALL
+#endif
+
 /**
  * Definitions for functions types passed to/from s3eExt interface
  */
@@ -95,15 +102,13 @@ s3eResult s3ePlayhavenInitWithKeys(const char* token, const char* secret)
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     s3eResult ret = g_Ext.m_s3ePlayhavenInitWithKeys(token, secret);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -117,15 +122,13 @@ void s3ePHRegisterCallback(s3ePHCallbackType callbackID, s3eCallback callbackFn,
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHRegisterCallback(callbackID, callbackFn, userData);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -139,15 +142,13 @@ void s3ePHSendAppOpen(const char* customUDID)
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHSendAppOpen(customUDID);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -161,15 +162,13 @@ void s3ePHSendContentRequest(const char* placement, bool showOverlayImmediately)
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHSendContentRequest(placement, showOverlayImmediately);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -183,15 +182,13 @@ void s3ePHPreloadContentRequest(const char* placement)
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHPreloadContentRequest(placement);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -205,15 +202,13 @@ void s3ePHCancelAllContentRequests()
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHCancelAllContentRequests();
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -227,15 +222,13 @@ void s3ePHReportResolution(s3ePHPurchaseResolutionType resolution)
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHReportResolution(resolution);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -249,15 +242,13 @@ void s3ePHSendPublisherIAPTrackingRequest(const char* product, int quantity, s3e
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHSendPublisherIAPTrackingRequest(product, quantity, resolution);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -271,15 +262,13 @@ s3eResult s3ePHShowNotificationView(int x, int y, bool useGLView, bool testing)
     if (!_extLoad())
         return S3E_RESULT_ERROR;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     s3eResult ret = g_Ext.m_s3ePHShowNotificationView(x, y, useGLView, testing);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -293,15 +282,13 @@ void s3ePHClearNotificationView()
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHClearNotificationView();
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -315,15 +302,13 @@ void s3ePHRefreshNotificationView(bool testing)
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHRefreshNotificationView(testing);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 
@@ -337,15 +322,13 @@ void s3ePHSetOptOutStatus(bool on)
     if (!_extLoad())
         return;
 
-#ifdef __mips
-    // For MIPs platform we do not have asm code for stack switching 
-    // implemented. So we make LoaderCallStart call manually to set GlobalLock
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
 #endif
 
     g_Ext.m_s3ePHSetOptOutStatus(on);
 
-#ifdef __mips
+#ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
 #endif
 

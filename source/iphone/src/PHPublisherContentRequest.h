@@ -59,63 +59,6 @@ extern PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismis
 /**
  * @internal
  *
- * @brief Request class for starting a content unit session. Manages the initial API
- * request, display of content unit, subcontent unit requests, native close
- * button, and overlay window.
- **/
-@interface PHPublisherContentRequest : PHAPIRequest <PHContentViewDelegate, PHAPIRequestDelegate> {
-    NSString       *_placement;
-    BOOL            _animated;
-    NSMutableArray *_contentViews;
-    BOOL            _showsOverlayImmediately;
-    UIButton       *_closeButton;
-
-    UIView    *_overlayWindow;
-    PHContent *_content;
-
-    PHPublisherContentRequestState _state;
-    PHPublisherContentRequestState _targetState;
-}
-
-/**
- * Returns a PHPublisherContentRequest instance for a given token secret and
- * placement. If a request was preloaded for the same placement, this method
- * will return that instance instead
- *
- * @param token
- *   The token
- *
- * @param secret
- *   The secret
- *
- * @param placement
- *   The placement
- *
- * @param delegate
- *   The delegate
- *
- * @return
- *   A PHPublisherContentRequest instance
- **/
-+ (id)requestForApp:(NSString *)token secret:(NSString *)secret placement:(NSString *)placement delegate:(id)delegate;
-
-@property (nonatomic,retain)    NSString       *placement;               /**< Placement id for this content request, this should correspond to one of the
-                                                                              placements set up for this game on the PlayHaven Dashboard */
-@property (nonatomic,assign)    BOOL            animated;                /**< Controls whether content unit transitions will be animated for this request */
-@property (nonatomic,readonly)  NSMutableArray *contentViews;            /**< Collection of PHContentViews being managed by this request */
-@property (nonatomic, assign)   BOOL            showsOverlayImmediately; /**< Controls whether or not the overlay will be shown immediately after PHAPIRequest#send.
-                                                                              Defaults to NO */
-@property (nonatomic, readonly) UIView         *overlayWindow;           /**< Overlay view instance */
-
-/**
- * Request the content unit from the API, but stop before actually displaying it until PHAPIRequest#send is called
- **/
-- (void)preload;
-@end
-
-/**
- * @internal
- *
  * @brief Delegate protocol. Content request delegates will get notified at various
  * points in the content unit session.
  **/
@@ -271,3 +214,90 @@ extern PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismis
  **/
 - (void)request:(PHPublisherContentRequest *)request makePurchase:(PHPurchase *)purchase;
 @end
+
+/**
+ * @internal
+ *
+ * @brief Request class for starting a content unit session. Manages the initial API
+ * request, display of content unit, subcontent unit requests, native close
+ * button, and overlay window.
+ **/
+@interface PHPublisherContentRequest : PHAPIRequest <PHContentViewDelegate, PHAPIRequestDelegate> {
+    NSString       *_placement;
+    BOOL            _animated;
+    NSMutableArray *_contentViews;
+    BOOL            _showsOverlayImmediately;
+    UIButton       *_closeButton;
+
+    UIView    *_overlayWindow;
+    PHContent *_content;
+
+    PHPublisherContentRequestState _state;
+    PHPublisherContentRequestState _targetState;
+}
+
+/**
+ * Returns a PHPublisherContentRequest instance for a given token secret and
+ * placement. If a request was preloaded for the same placement, this method
+ * will return that instance instead
+ *
+ * @param token
+ *   The token
+ *
+ * @param secret
+ *   The secret
+ *
+ * @param placement
+ *   The placement
+ *
+ * @param delegate
+ *   The delegate
+ *
+ * @return
+ *   A PHPublisherContentRequest instance
+ **/
++ (id)requestForApp:(NSString *)token secret:(NSString *)secret placement:(NSString *)placement delegate:(id)delegate;
+
+/**
+ * Returns a PHPublisherContentRequest instance for a given token, secret and content unit ID.
+ *
+ * @param token
+ *  The token
+ *
+ * @param secret
+ *  The secret
+ *
+ * @param placement
+ *  The placement
+ *
+ * @param aContentID
+ *  Identifier uniquely identifying content unit which is to be requested.
+ *
+ * @param messageID
+ *  Identifier of a push notification sent by PlayHaven server. Message id is assigned to each push
+ *  notification sent from the server and its is passed as a separate field in in the push
+ *  notification payload. This property should be set for a content request that is created as a
+ *  result of incoming push notification.
+ *
+ * @return
+ *   A PHPublisherContentRequest instance
+ **/
++ (id)requestForApp:(NSString *)token secret:(NSString *)secret contentUnitID:(NSString *)contentID
+            messageID:(NSString *)messageID;
+
+@property (nonatomic, retain)    NSString       *placement;               /**< Placement id for this content request, this should correspond to one of the
+                                                                              placements set up for this game on the PlayHaven Dashboard */
+@property (nonatomic,assign)    BOOL            animated;                /**< Controls whether content unit transitions will be animated for this request */
+@property (nonatomic,readonly)  NSMutableArray *contentViews;            /**< Collection of PHContentViews being managed by this request */
+@property (nonatomic, assign)   BOOL            showsOverlayImmediately; /**< Controls whether or not the overlay will be shown immediately after PHAPIRequest#send.
+                                                                              Defaults to NO */
+@property (nonatomic, readonly) UIView         *overlayWindow;           /**< Overlay view instance */
+
+@property (nonatomic, assign) id<PHPublisherContentRequestDelegate> delegate;
+
+/**
+ * Request the content unit from the API, but stop before actually displaying it until PHAPIRequest#send is called
+ **/
+- (void)preload;
+@end
+

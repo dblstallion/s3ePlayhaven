@@ -24,7 +24,7 @@
 /** @file */
 
 // Constants
-#define PH_SDK_VERSION @"1.13.1"
+#define PH_SDK_VERSION @"1.21.1"
 
 #ifndef PH_BASE_URL
 #define PH_BASE_URL @"http://api2.playhaven.com"
@@ -53,8 +53,10 @@
  * * \b 3: Unknown dispatches are ignored instead of throwing an error
  * * \b 4: ph://launch dispatches no longer create native spinner views
  * * \b 5: ph://launch dispatches support in-app app store launches on iOS 6 <em>(Current Version)</em>
+ * * \b 6: Content template forwards links with a custom URL scheme to SDK using ph://launch dispatch
+ *      instead of executing ph://link dispatch on its own.
  **/
-#define PH_DISPATCH_PROTOCOL_VERSION 5
+#define PH_DISPATCH_PROTOCOL_VERSION 6
 
 /**
  * Defines the maximum amount of time that an API request will wait for a
@@ -148,18 +150,25 @@
 #endif
 
 /**
- * Sends UDID with each request. To disable, set to 0.
- **/
-#ifndef PH_USE_UNIQUE_IDENTIFIER
-#define PH_USE_UNIQUE_IDENTIFIER 0
-#endif
-
-/**
  * Sends the device's MAC address with each request. To disable, set to 0.
  **/
 #ifndef PH_USE_MAC_ADDRESS
 #define PH_USE_MAC_ADDRESS 1
 #endif
+
+/**
+ * Convenience macros to check system version. Usage example:
+ *
+ * if (PH_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"6.0"))
+ * {
+ *     ...
+ * }
+ **/
+#define PH_SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
+#define PH_SYSTEM_VERSION_GREATER_THAN(v)              ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedDescending)
+#define PH_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
+#define PH_SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+#define PH_SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
 
 // Macros
 #define PH_URL(PATH) [PH_BASE_URL stringByAppendingString:@#PATH]
@@ -184,9 +193,6 @@
 #endif
 
 #define PH_MULTITASKING_SUPPORTED [[UIDevice currentDevice] respondsToSelector:@selector(isMultitaskingSupported)] && [[UIDevice currentDevice] isMultitaskingSupported]
-
-NSString *PHGID(void);
-void PHClearGID(void);
 
 // Errors
 typedef enum {
@@ -249,6 +255,3 @@ extern const playHavenImage badge_image;
 extern const playHavenImage badge_2x_image;
 extern const playHavenImage close_image;
 extern const playHavenImage close_active_image;
-
-NSString *PHGID();
-void PHClearGID();

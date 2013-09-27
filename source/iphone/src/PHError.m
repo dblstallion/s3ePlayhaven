@@ -13,21 +13,12 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 
- PlayHavenSDK.h
+ PHError.h
  playhaven-sdk-ios
 
- Created by Jesus Fernandez on 4/22/11.
+ Created by Anton Fedorchenko on 4/26/13
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-#import "PHConstants.h"
+#import "PHError.h"
 
-#import "PHPublisherOpenRequest.h"
-#import "PHPublisherContentRequest.h"
-#import "PHPublisherMetadataRequest.h"
-#import "PHPublisherIAPTrackingRequest.h"
-
-#import "PHNotificationView.h"
-#import "PHReward.h"
-#import "PHPurchase.h"
-
-#import "PHPushProvider.h"
+NSString *const kPHSDKErrorDomain = @"com.playhaven.errordomain";

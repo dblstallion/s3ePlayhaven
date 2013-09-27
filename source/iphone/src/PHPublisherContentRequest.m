@@ -29,6 +29,10 @@
 #import "PHPublisherIAPTrackingRequest.h"
 #import "JSON.h"
 #import "PHTimeInGame.h"
+#import "PHAPIRequest+Private.h"
+
+static NSString *const kPHReceiptDictionaryIDKey = @"id";
+static NSString *const kPHReceiptDictionaryV4SignatureKey = @"sig4";
 
 NSString *const PHPublisherContentRequestRewardIDKey        = @"reward";
 NSString *const PHPublisherContentRequestRewardQuantityKey  = @"quantity";
@@ -41,6 +45,13 @@ NSString *const PHPublisherContentRequestPurchaseQuantityKey  = @"quantity";
 NSString *const PHPublisherContentRequestPurchaseReceiptKey   = @"receipt";
 NSString *const PHPublisherContentRequestPurchaseSignatureKey = @"signature";
 NSString *const PHPublisherContentRequestPurchaseCookieKey    = @"cookie";
+
+static NSString *const kPHSessionDurationKey  = @"stime";
+static NSString *const kPHRequestPreloadedKey = @"preload";
+static NSString *const kPHIsaKey              = @"isa";
+static NSString *const kPHPlacementIDKey      = @"placement_id";
+static NSString *const kPHContentIDKey        = @"content_id";
+static NSString *const kPHRequestParameterMessageIDKey = @"message_id";
 
 PHPublisherContentDismissType * const PHPublisherContentUnitTriggeredDismiss           = @"PHPublisherContentUnitTriggeredDismiss";
 PHPublisherContentDismissType * const PHPublisherNativeCloseButtonTriggeredDismiss     = @"PHPublisherNativeCloseButtonTriggeredDismiss";
@@ -78,19 +89,24 @@ PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismiss      
 - (BOOL)setPublisherContentRequestState:(PHPublisherContentRequestState)state;
 - (void)requestSubcontent:(NSDictionary *)queryParameters callback:(NSString *)callback source:(PHContentView *)source;
 
-- (BOOL)isValidReward:(NSDictionary *)rewardData;
 - (void)requestRewards:(NSDictionary *)queryParameters callback:(NSString *)callback source:(PHContentView *)source;
 
-- (BOOL)isValidPurchase:(NSDictionary *)purchaseData;
 - (void)requestPurchases:(NSDictionary *)queryParameters callback:(NSString *)callback source:(PHContentView *)source;
 
 - (void)requestCloseButton:(NSDictionary *)queryParameters callback:(NSString *)callback source:(PHContentView *)source;
 @end
 
+@interface PHAPIRequest ()
+@property (nonatomic, retain, readonly) NSString *contentUnitID;
+@property (nonatomic, retain, readonly) NSString *messageID;
+@end
+
 @implementation PHPublisherContentRequest
+@synthesize contentUnitID           = _contentUnitID;
 @synthesize placement               = _placement;
 @synthesize animated                = _animated;
 @synthesize showsOverlayImmediately = _showsOverlayImmediately;
+@synthesize messageID = _messageID;
 //@synthesize state                   = _state;
 //@dynamic    state; // TODO: Figure out what's going on with this variable (state)
 //                   // TODO: Lilli added @dynamic to try and quelch warnings, but still there
@@ -123,6 +139,13 @@ PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismiss      
     }
 }
 
++ (id)requestForApp:(NSString *)token secret:(NSString *)secret contentUnitID:(NSString *)contentID
+            messageID:(NSString *)messageID
+{
+    return [[[[self class] alloc] initWithApp:token secret:secret contentUnitID:contentID messageID:
+                messageID] autorelease];
+}
+
 - (id)initWithApp:(NSString *)token secret:(NSString *)secret placement:(NSString *)placement delegate:(id)delegate
 {
     if ((self = [self initWithApp:token secret:secret])) {
@@ -130,6 +153,18 @@ PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismiss      
         self.delegate = delegate;
     }
 
+    return self;
+}
+
+- (id)initWithApp:(NSString *)token secret:(NSString *)secret contentUnitID:(NSString *)contentID
+            messageID:(NSString *)messageID
+{
+    self = [self initWithApp:token secret:secret];
+    if (nil != self)
+    {
+        _contentUnitID = [contentID retain];
+        _messageID = [messageID retain];
+    }
     return self;
 }
 
@@ -210,11 +245,14 @@ PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismiss      
 {
     [PHPublisherContentRequest cancelPreviousPerformRequestsWithTarget:self selector:@selector(showCloseButtonBecauseOfTimeout) object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+
     [_content release], _content = nil;
     [_placement release], _placement = nil;
     [_contentViews release], _contentViews = nil;
     [_closeButton release], _closeButton = nil;
     [_overlayWindow release], _overlayWindow = nil;
+    [_contentUnitID release], _contentUnitID = nil;
+    [_messageID release];
 
     [super dealloc];
 }
@@ -342,27 +380,30 @@ PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismiss      
 
 - (NSDictionary *)additionalParameters
 {
+    NSMutableDictionary *theAdditionalParameters =
+                                [NSMutableDictionary dictionaryWithObjectsAndKeys:
+            [NSNumber numberWithInt:(int)floor([[PHTimeInGame getInstance] getCurrentSessionDuration])], kPHSessionDurationKey,
+            @(_targetState == PHPublisherContentRequestPreloaded),                                       kPHRequestPreloadedKey, nil];
+
 #if PH_USE_STOREKIT != 0
-    return [NSDictionary dictionaryWithObjectsAndKeys:
-                                 self.placement,
-                                          @"placement_id",
-                                 [NSNumber numberWithInt:(int)floor([[PHTimeInGame getInstance] getCurrentSessionDuration])],
-                                          @"stime",
-                                 [NSNumber numberWithBool:(_targetState == PHPublisherContentRequestPreloaded)],
-                                          @"preload",
-                                 [NSNumber numberWithBool:([SKStoreProductViewController class] != nil)],
-                                          @"isa", nil];
+    [theAdditionalParameters setObject:@([SKStoreProductViewController class] != nil)
+                                forKey:kPHIsaKey];
 #else
-    return [NSDictionary dictionaryWithObjectsAndKeys:
-                                 self.placement,
-                                          @"placement_id",
-                                 [NSNumber numberWithInt:(int)floor([[PHTimeInGame getInstance] getCurrentSessionDuration])],
-                                          @"stime",
-                                 [NSNumber numberWithBool:(_targetState == PHPublisherContentRequestPreloaded)],
-                                          @"preload",
-                                 [NSNumber numberWithBool:NO],
-                                          @"isa", nil];
+    [theAdditionalParameters setObject:@(NO) forKey:kPHIsaKey];
 #endif
+
+    [theAdditionalParameters setObject:(nil != self.placement ? self.placement : @"")
+                                forKey:kPHPlacementIDKey];
+    [theAdditionalParameters setObject:(nil != self.contentUnitID ? self.contentUnitID : @"")
+                                forKey:kPHContentIDKey];
+    
+    if (nil != self.contentUnitID)
+    {
+        [theAdditionalParameters setObject:(nil != self.messageID ? self.messageID : @"")
+                                    forKey:kPHRequestParameterMessageIDKey];
+    }
+
+    return theAdditionalParameters;
 }
 
 - (void)cancel
@@ -718,22 +759,32 @@ PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismiss      
 #pragma mark - Reward unlocking methods
 - (BOOL)isValidReward:(NSDictionary *)rewardData
 {
-    NSString *reward    = [rewardData valueForKey:PHPublisherContentRequestRewardIDKey];
-    NSNumber *quantity  = [rewardData valueForKey:PHPublisherContentRequestRewardQuantityKey];
-    NSNumber *receipt   = [rewardData valueForKey:PHPublisherContentRequestRewardReceiptKey];
-    NSString *signature = [rewardData valueForKey:PHPublisherContentRequestRewardSignatureKey];
+    NSString *theIdentifier = [[self class] identifiers][rewardData[kPHReceiptDictionaryIDKey]];
+    NSString *theReward    = rewardData[PHPublisherContentRequestRewardIDKey];
+    NSNumber *theQuantity  = rewardData[PHPublisherContentRequestPurchaseQuantityKey];
+    NSNumber *theReceipt   = rewardData[PHPublisherContentRequestPurchaseReceiptKey];
+    NSString *theSignature = rewardData[kPHReceiptDictionaryV4SignatureKey];
+    
+    if (nil == theIdentifier || nil == theReward || nil == theQuantity || nil == theReceipt ||
+                nil == theSignature)
+    {
+        PH_DEBUG(@"Missed required field in the purchase dictionary: %@", rewardData);
+        return NO;
+    }
+    
+    NSArray *theSignatureElements = @[theIdentifier, theReward, theQuantity, theReceipt];
+    NSString *theGeneratedSignature = [[self class] v4SignatureWithMessage:[theSignatureElements
+                componentsJoinedByString:@":"] signatureKey:self.secret];
 
-    NSString *generatedSignatureString =
-                     [NSString stringWithFormat:@"%@:%@:%@:%@:%@",
-                                          reward,
-                                          quantity,
-                                          PHGID(),
-                                          receipt,
-                                          self.secret];
+    BOOL theResult = [theGeneratedSignature isEqualToString:theSignature];
+    
+    if (!theResult)
+    {
+        PH_DEBUG(@"ERROR: The generated signature '%@' does not match the expected one '%@'",
+                    theGeneratedSignature, theSignature);
+    }
 
-    NSString *generatedSignature = [PHStringUtil hexDigestForString:generatedSignatureString];
-
-    return [generatedSignature isEqualToString:signature];
+    return theResult;
 }
 
 - (void)requestRewards:(NSDictionary *)queryParameters callback:(NSString *)callback source:(PHContentView *)source
@@ -759,23 +810,34 @@ PHPublisherContentDismissType * const PHPublisherNoContentTriggeredDismiss      
 #pragma mark - Purchase unlocking methods
 - (BOOL)isValidPurchase:(NSDictionary *)purchaseData
 {
-    NSString *productId = [purchaseData valueForKey:PHPublisherContentRequestPurchaseProductIDKey];
-    NSString *name      = [purchaseData valueForKey:PHPublisherContentRequestPurchaseNameKey];
-    NSNumber *quantity  = [purchaseData valueForKey:PHPublisherContentRequestPurchaseQuantityKey];
-    NSNumber *receipt   = [purchaseData valueForKey:PHPublisherContentRequestPurchaseReceiptKey];
-    NSString *signature = [purchaseData valueForKey:PHPublisherContentRequestPurchaseSignatureKey];
+    NSString *theIdentifier = [[self class] identifiers][purchaseData[kPHReceiptDictionaryIDKey]];
+    NSString *theProductId = purchaseData[PHPublisherContentRequestPurchaseProductIDKey];
+    NSString *theName      = purchaseData[PHPublisherContentRequestPurchaseNameKey];
+    NSNumber *theQuantity  = purchaseData[PHPublisherContentRequestPurchaseQuantityKey];
+    NSNumber *theReceipt   = purchaseData[PHPublisherContentRequestPurchaseReceiptKey];
+    NSString *theSignature = purchaseData[kPHReceiptDictionaryV4SignatureKey];
 
-    NSString *generatedSignatureString =
-                     [NSString stringWithFormat:@"%@:%@:%@:%@:%@:%@",
-                                          productId,
-                                          name,
-                                          quantity,
-                                          PHGID(),
-                                          receipt,
-                                          self.secret];
-    NSString *generatedSignature = [PHStringUtil hexDigestForString:generatedSignatureString];
+    if (nil == theIdentifier || nil == theProductId || nil == theName || nil == theQuantity ||
+                nil == theReceipt || nil == theSignature)
+    {
+        PH_DEBUG(@"Missed required field in the purchase dictionary: %@", purchaseData);
+        return NO;
+    }
 
-    return [generatedSignature isEqualToString:signature];
+    NSArray *theSignatureElements = @[theIdentifier, theProductId, theName, theQuantity,
+                theReceipt];
+    NSString *theGeneratedSignature = [[self class] v4SignatureWithMessage:[theSignatureElements
+                componentsJoinedByString:@":"] signatureKey:self.secret];
+    
+    BOOL theResult = [theGeneratedSignature isEqualToString:theSignature];
+    
+    if (!theResult)
+    {
+        PH_DEBUG(@"ERROR: The generated signature - %@ does not match the expected one - %@",
+                    theGeneratedSignature, theSignature);
+    }
+
+    return theResult;
 }
 
 - (void)requestPurchases:(NSDictionary *)queryParameters callback:(NSString *)callback source:(PHContentView *)source
