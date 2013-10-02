@@ -29,10 +29,10 @@ subproject "$MARMALADE_ROOT/s3e/edk"
 if {{defined I3D_OS_IPHONE}}
 {
     define PH_NAMESPACE_LIBS  # PH_NAMESPACE_LIBS puts OpenUDID and SBJSON in their own namespace
-    includepath source/iphone/src
-    includepath source/iphone/JSON
-    includepath source/iphone/OpenUDID
-    includepath source/iphone/Cache
+    includepath sdk-ios/src
+    includepath sdk-ios/JSON
+    includepath sdk-ios/OpenUDID
+    includepath sdk-ios/Cache
     files
     {
         ["source"]
@@ -42,19 +42,19 @@ if {{defined I3D_OS_IPHONE}}
 		
         #Add any iphone-specific files here
         ["WaterWorks"]
-        (source/iphone/WaterWorks)
+        (sdk-ios/WaterWorks)
         "*.m"
 		
         ["SBJSON"]
-        (source/iphone/JSON)
+        (sdk-ios/JSON)
         "*.m"
 		
         ["SDCachedURLResponse"]
-        (source/iphone/Cache)
+        (sdk-ios/Cache)
         "*.m"
 		
         ["PH Source"]
-        (source/iphone/src)
+        (sdk-ios/src)
         "*.m"
     }
 }

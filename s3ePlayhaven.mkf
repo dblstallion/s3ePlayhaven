@@ -38,7 +38,7 @@ if {{ not defined IW_MKF_IWCRT}}
 deployments
 {
     android-external-jars="lib/android/s3ePlayhaven.jar"
-	android-external-jars="lib/android/playhaven-1.12.5.jar"
+	android-external-jars="lib/android/playhaven.jar"
 	android-extra-application-manifest="source/android/ExtraAppManifests.txt"
     android-so="lib/android/libs3ePlayhaven.so"
 }

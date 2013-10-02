@@ -1,0 +1,6 @@
+[submodule "sdk-ios"]
+	path = sdk-ios
+	url = git://github.com/playhaven/sdk-ios.git
+[submodule "sdk-android"]
+	path = sdk-android
+	url = git://github.com/playhaven/sdk-android.git
