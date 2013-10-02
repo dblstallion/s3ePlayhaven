@@ -82,3 +82,8 @@ void s3ePHSetOptOutStatus(bool on)
 {
 	s3ePHSetOptOutStatus_platform(on);
 }
+
+void s3ePHSendPublisherIAPTrackingRequestWithReceipt(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize)
+{
+	s3ePHSendPublisherIAPTrackingRequestWithReceipt_platform(product, quantity, resolution, receiptData, receiptSize);
+}

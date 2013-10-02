@@ -263,6 +263,8 @@ request is going to be in flight at a time.
 void s3ePHReportResolution(s3ePHPurchaseResolutionType resolution);
 
 /**
+@deprecated (to show a compiler warning)
+
 Tracking in-app purchases
 By providing data on your In-App Purchases to PlayHaven, you can track your users' overall lifetime value as well as track conversions from your Virtual Goods Promotion 
 content units. To report successful purchases call this after a purchase has been successfully delivered.
@@ -312,6 +314,21 @@ note Corresponds to [PHAPIRequest setOptOutStatus:(BOOL)yesOrNo] in iOS SDK
 @param on - true if opting out
 */
 void s3ePHSetOptOutStatus(bool on);
+
+/**
+Tracking in-app purchases
+By providing data on your In-App Purchases to PlayHaven, you can track your users' overall lifetime value as well as track conversions from your Virtual Goods Promotion 
+content units. To report successful purchases call this after a purchase has been successfully delivered.
+note This version of IAP tracking does receipt validation
+note Corresponds to [PHPublisherIAPTrackingRequest send] in iOS SDK
+
+@param product - string identifying the product
+@param quantity - quantity of the product
+@param resolution - see s3ePHPurchaseResolutionType
+@param receiptData - pointer to binary receipt data
+@param receiptSize - size of the receipt data
+*/
+void s3ePHSendPublisherIAPTrackingRequestWithReceipt(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize);
 
 S3E_END_C_DECL
 

@@ -224,6 +224,13 @@ void s3ePHSendPublisherIAPTrackingRequest_platform(const char* product, int quan
     env->CallVoidMethod(g_Obj, g_s3ePHSendPublisherIAPTrackingRequest, product_jstr, quantity,(int) resolution);
 }
 
+void s3ePHSendPublisherIAPTrackingRequestWithReceipt_platform(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize)
+{
+    JNIEnv* env = s3eEdkJNIGetEnv();
+    jstring product_jstr = env->NewStringUTF(product);
+    env->CallVoidMethod(g_Obj, g_s3ePHSendPublisherIAPTrackingRequest, product_jstr, quantity,(int) resolution);
+}
+
 s3eResult s3ePHShowNotificationView_platform(int x, int y, bool useGLView, bool testing)
 {
     JNIEnv* env = s3eEdkJNIGetEnv();

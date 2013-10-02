@@ -66,5 +66,7 @@ void s3ePHRefreshNotificationView_platform(bool testing);
 
 void s3ePHSetOptOutStatus_platform(bool on);
 
+void s3ePHSendPublisherIAPTrackingRequestWithReceipt_platform(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize);
+
 
 #endif /* !S3EPLAYHAVEN_INTERNAL_H */

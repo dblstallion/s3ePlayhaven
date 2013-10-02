@@ -32,6 +32,7 @@ typedef  s3eResult(*s3ePHShowNotificationView_t)(int x, int y, bool useGLView, b
 typedef       void(*s3ePHClearNotificationView_t)();
 typedef       void(*s3ePHRefreshNotificationView_t)(bool testing);
 typedef       void(*s3ePHSetOptOutStatus_t)(bool on);
+typedef       void(*s3ePHSendPublisherIAPTrackingRequestWithReceipt_t)(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize);
 
 /**
  * struct that gets filled in by s3ePlayhavenRegister
@@ -50,6 +51,7 @@ typedef struct s3ePlayhavenFuncs
     s3ePHClearNotificationView_t m_s3ePHClearNotificationView;
     s3ePHRefreshNotificationView_t m_s3ePHRefreshNotificationView;
     s3ePHSetOptOutStatus_t m_s3ePHSetOptOutStatus;
+    s3ePHSendPublisherIAPTrackingRequestWithReceipt_t m_s3ePHSendPublisherIAPTrackingRequestWithReceipt;
 } s3ePlayhavenFuncs;
 
 static s3ePlayhavenFuncs g_Ext;
@@ -327,6 +329,26 @@ void s3ePHSetOptOutStatus(bool on)
 #endif
 
     g_Ext.m_s3ePHSetOptOutStatus(on);
+
+#ifdef LOADER_CALL
+    s3eDeviceLoaderCallDone(S3E_TRUE, NULL);
+#endif
+
+    return;
+}
+
+void s3ePHSendPublisherIAPTrackingRequestWithReceipt(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize)
+{
+    IwTrace(PLAYHAVEN_VERBOSE, ("calling s3ePlayhaven[12] func: s3ePHSendPublisherIAPTrackingRequestWithReceipt"));
+
+    if (!_extLoad())
+        return;
+
+#ifdef LOADER_CALL
+    s3eDeviceLoaderCallStart(S3E_TRUE, NULL);
+#endif
+
+    g_Ext.m_s3ePHSendPublisherIAPTrackingRequestWithReceipt(product, quantity, resolution, receiptData, receiptSize);
 
 #ifdef LOADER_CALL
     s3eDeviceLoaderCallDone(S3E_TRUE, NULL);

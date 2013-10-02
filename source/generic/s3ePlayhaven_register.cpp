@@ -84,6 +84,12 @@ static void s3ePHSetOptOutStatus_wrap(bool on)
     s3eEdkThreadRunOnOS((s3eEdkThreadFunc)s3ePHSetOptOutStatus, 1, on);
 }
 
+static void s3ePHSendPublisherIAPTrackingRequestWithReceipt_wrap(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize)
+{
+    IwTrace(PLAYHAVEN_VERBOSE, ("calling s3ePlayhaven func on main thread: s3ePHSendPublisherIAPTrackingRequestWithReceipt"));
+    s3eEdkThreadRunOnOS((s3eEdkThreadFunc)s3ePHSendPublisherIAPTrackingRequestWithReceipt, 5, product, quantity, resolution, receiptData, receiptSize);
+}
+
 #define s3ePlayhavenInitWithKeys s3ePlayhavenInitWithKeys_wrap
 #define s3ePHSendAppOpen s3ePHSendAppOpen_wrap
 #define s3ePHSendContentRequest s3ePHSendContentRequest_wrap
@@ -94,13 +100,14 @@ static void s3ePHSetOptOutStatus_wrap(bool on)
 #define s3ePHShowNotificationView s3ePHShowNotificationView_wrap
 #define s3ePHClearNotificationView s3ePHClearNotificationView_wrap
 #define s3ePHSetOptOutStatus s3ePHSetOptOutStatus_wrap
+#define s3ePHSendPublisherIAPTrackingRequestWithReceipt s3ePHSendPublisherIAPTrackingRequestWithReceipt_wrap
 
 #endif
 
 void s3ePlayhavenRegisterExt()
 {
     /* fill in the function pointer struct for this extension */
-    void* funcPtrs[12];
+    void* funcPtrs[13];
     funcPtrs[0] = (void*)s3ePlayhavenInitWithKeys;
     funcPtrs[1] = (void*)s3ePHRegisterCallback;
     funcPtrs[2] = (void*)s3ePHSendAppOpen;
@@ -113,11 +120,12 @@ void s3ePlayhavenRegisterExt()
     funcPtrs[9] = (void*)s3ePHClearNotificationView;
     funcPtrs[10] = (void*)s3ePHRefreshNotificationView;
     funcPtrs[11] = (void*)s3ePHSetOptOutStatus;
+    funcPtrs[12] = (void*)s3ePHSendPublisherIAPTrackingRequestWithReceipt;
 
     /*
      * Flags that specify the extension's use of locking and stackswitching
      */
-    int flags[12] = { 0 };
+    int flags[13] = { 0 };
 
     /*
      * Register the extension

@@ -105,13 +105,9 @@ static void s3ePHPurchaseDeallocator(uint32 extID, int32 notification, void *sys
 
 	if (s3eEdkCallbacksIsRegistered(S3E_EXT_PLAYHAVEN_HASH,S3EPH_CONTENT_START))
 	{
-		// pass the placement to the Marmalade app 
-		char *placementMsg = NULL;
-		if (request.placement)
-			placementMsg = CopyToCString(request.placement);
-        s3eEdkCallbacksEnqueue(S3E_EXT_PLAYHAVEN_HASH,S3EPH_CONTENT_START,placementMsg,((placementMsg)?strlen(placementMsg)+1:0));
-		if (placementMsg)
-			s3eEdkFreeOS(placementMsg);
+		// s3eCallbacksEnqueue will copy the string
+		const char *placementMsg = request.placement ? [request.placement UTF8String] : NULL;
+        s3eEdkCallbacksEnqueue(S3E_EXT_PLAYHAVEN_HASH, S3EPH_CONTENT_START, (void*)placementMsg, (placementMsg ? strlen(placementMsg)+1 : 0));
 	}
 }
 
@@ -121,13 +117,9 @@ static void s3ePHPurchaseDeallocator(uint32 extID, int32 notification, void *sys
 
 	if (s3eEdkCallbacksIsRegistered(S3E_EXT_PLAYHAVEN_HASH,S3EPH_CONTENT_START))
 	{
-		// pass the placement to the Marmalade app 
-		char *placementMsg = NULL;
-		if (request.placement)
-			placementMsg = CopyToCString(request.placement);
-        s3eEdkCallbacksEnqueue(S3E_EXT_PLAYHAVEN_HASH,S3EPH_CONTENT_START,placementMsg,((placementMsg)?strlen(placementMsg)+1:0));
-		if (placementMsg)
-			s3eEdkFreeOS(placementMsg);
+		// s3eCallbacksEnqueue will copy the string
+		const char *placementMsg = request.placement ? [request.placement UTF8String] : NULL;
+        s3eEdkCallbacksEnqueue(S3E_EXT_PLAYHAVEN_HASH, S3EPH_CONTENT_START, (void*)placementMsg, (placementMsg ? strlen(placementMsg)+1 : 0));
 	}
 }
 
@@ -148,7 +140,7 @@ static void s3ePHPurchaseDeallocator(uint32 extID, int32 notification, void *sys
         // queue the callback and specify our deallocator which kicks in after the callback completes - the deallocator isn't
         // invoked until well after the scope of this function exits.
         // the sysDataSize is zero which means Marmalade won't make a copy
-        s3eEdkCallbacksEnqueue(S3E_EXT_PLAYHAVEN_HASH,S3EPH_CONTENT_WILL_DISPLAY,cont,0,NULL,false,s3ePHContentDeallocator,cont);
+        s3eEdkCallbacksEnqueue(S3E_EXT_PLAYHAVEN_HASH, S3EPH_CONTENT_WILL_DISPLAY, cont, 0, NULL, false, s3ePHContentDeallocator, cont);
 	}
 	// clear any notifications
 	if (gNotificationView)
@@ -406,6 +398,20 @@ void s3ePHSendPublisherIAPTrackingRequest_platform(const char* product, int quan
 	[request send]; 
 
 	[nsProduct release];
+}
+
+void s3ePHSendPublisherIAPTrackingRequestWithReceipt_platform(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize)
+{
+	NSString *nsProduct = [[NSString alloc] initWithUTF8String:product];
+	NSData *receipt = [[NSData alloc] initWithBytes:receiptData length:receiptSize];
+	
+	NSLog(@"Playhaven:s3ePHSendPublisherIAPTrackingRequestWithReceipt %@",nsProduct);
+
+	PHPublisherIAPTrackingRequest *request = [PHPublisherIAPTrackingRequest requestForApp:gPHToken secret:gPHSecret product:nsProduct quantity:quantity resolution:(PHPurchaseResolutionType)resolution receiptData:receipt];
+	[request send]; 
+
+	[nsProduct release];
+	[receipt release];
 }
 
 s3eResult s3ePHShowNotificationView_platform(int x,int y,bool useGLView,bool testing)
