@@ -403,7 +403,10 @@ void s3ePHSendPublisherIAPTrackingRequest_platform(const char* product, int quan
 void s3ePHSendPublisherIAPTrackingRequestWithReceipt_platform(const char* product, int quantity, s3ePHPurchaseResolutionType resolution, const void* receiptData, size_t receiptSize)
 {
 	NSString *nsProduct = [[NSString alloc] initWithUTF8String:product];
-	NSData *receipt = [[NSData alloc] initWithBytes:receiptData length:receiptSize];
+	
+	NSData *receipt = nil;
+	if(receiptData && receiptSize > 0)
+		receipt = [[NSData alloc] initWithBytes:receiptData length:receiptSize];
 	
 	NSLog(@"Playhaven:s3ePHSendPublisherIAPTrackingRequestWithReceipt %@",nsProduct);
 
@@ -411,7 +414,9 @@ void s3ePHSendPublisherIAPTrackingRequestWithReceipt_platform(const char* produc
 	[request send]; 
 
 	[nsProduct release];
-	[receipt release];
+	
+	if(receipt)
+		[receipt release];
 }
 
 s3eResult s3ePHShowNotificationView_platform(int x,int y,bool useGLView,bool testing)
